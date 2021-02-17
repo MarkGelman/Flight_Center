@@ -30,10 +30,41 @@ namespace Flight_Center
             Credit_Card_No = credit_card_no;
             User_Id = user_id;
         }
+        public override string ToString()
+        {
+            return $"{Newtonsoft.Json.JsonConvert.SerializeObject(this)}";
+        }
 
+        public override bool Equals(object obj)
+        {
+            Customer test = obj as Customer;
+            return this.Id.Equals(test.Id);
+        }
 
+        public override int GetHashCode()
+        {
+            return (int)this.Id;
+        }
 
+        public static bool operator ==(Customer c1, Customer c2)
+        {
 
+            if (c1 is null && c2 is null)
+                return true;
+            if (c1.Id == c2.Id)
+                return true;
+            return false;
+        }
 
+        public static bool operator !=(Customer c1, Customer c2)
+        {
+            return !(c1 == c2);
+        }
     }
+
+
+
+
+
 }
+

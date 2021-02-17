@@ -30,5 +30,36 @@ namespace Flight_Center
             Remaining_Tickets = remaining_tickets;
         }
 
+        public override string ToString()
+        {
+            return $"{Newtonsoft.Json.JsonConvert.SerializeObject(this)}";
+        }
+
+        public override bool Equals(object obj)
+        {
+            Flight test = obj as Flight;
+            return this.Id.Equals(test.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return (int)this.Id;
+        }
+
+        public static bool operator ==(Flight c1, Flight c2)
+        {
+
+            if (c1 is null && c2 is null)
+                return true;
+            if (c1.Id == c2.Id)
+                return true;
+            return false;
+        }
+
+        public static bool operator !=(Flight c1, Flight c2)
+        {
+            return !(c1 == c2);
+        }
+
     }
 }
