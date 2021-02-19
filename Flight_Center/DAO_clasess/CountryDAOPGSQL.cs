@@ -6,40 +6,40 @@ namespace Flight_Center
 {
     public class CountryDAOPGSQL : ICountryDAO
     {
-        string _query = "";
+        string m_sp_name = "";
         public void Add(Country t)
         {
-            _query = $"INSERT INTO tests VALUES ({t.Id},{t.Name},)";
+            m_sp_name= $"INSERT INTO tests VALUES ({t.Id},{t.Name},)";
 
-            int row = NonReader(_query, "Add country");
+            int row = NonReader(m_sp_name, "Add country");
         }
 
         public IList<Country> Get(int id)
         {
-            _query = $"SELECT * FROM tests WHERE id = {id}";
+            m_sp_name = $"SELECT * FROM tests WHERE id = {id}";
 
-            return Reader(_query, $"Get country by {id}");
+            return Reader(m_sp_name, $"Get country by {id}");
         }
 
         public IList<Country> GelAll()
         {
-            _query = $"SELECT * FROM tests";
+            m_sp_name = $"SELECT * FROM tests";
 
-            return Reader(_query, "Get all country");
+            return Reader(m_sp_name, "Get all country");
         }
 
         
 
         public void Remove(Country t)
         {
-            _query = $"DELETE FROM tests WHERE id ={t.Id}";
-            int row = NonReader(_query, $"Delete Country {t.Name}");
+            m_sp_name = $"DELETE FROM tests WHERE id ={t.Id}";
+            int row = NonReader(m_sp_name, $"Delete Country {t.Name}");
         }
 
         public void Update(Country t)
         {
-            _query = $"UPDATE tests SET id = {t.Id},name = {t.Name} ";
-            int row = NonReader(_query, "Update Tests");
+            m_sp_name = $"UPDATE tests SET id = {t.Id},name = {t.Name} ";
+            int row = NonReader(m_sp_name, "Update Tests");
         }
 
         public List<Country> Reader(string query, string function)
