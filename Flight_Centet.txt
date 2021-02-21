@@ -1,3 +1,289 @@
+CREATE TABLE administrators
+  (
+      id serial unique ,
+      first_name text,
+      last_name bigint,
+      level int ,
+      user_id bigint,
+      PRIMARY KEY (id),
+      FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+INSERT INTO administrators
+VALUES (1,'Georg','Ots',1),
+       (2,'Tenis','Miagi',2),
+       (3,'Sofia','Rotaru',2),
+       (4,'Ichak','Balun',2);
+
+
+CREATE OR REPLACE FUNCTION sp_idu_administrators (_tasks text,_id bigint,_first_name text,_last_name text,_level int,_user_id bigint)
+RETURNS int
+Language plpgsql AS
+  $$
+      DECLARE
+            new_id int;
+      BEGIN
+            CASE
+                WHEN  _tasks = 'Insert'
+                THEN
+                     INSERT INTO administrators (first_name, last_name, level, user_id)
+                     VALUES (_first_name,_last_name,_level,_user_id)
+                     RETURNING id INTO new_id;
+                WHEN  _tasks = 'Delete'
+                THEN
+                     DELETE FROM administrators WHERE id = _id;
+                WHEN  _tasks = 'Update'
+                THEN
+                     UPDATE administrators
+                     SET
+                     first_name = _first_name,
+                     last_name = _last_name,
+                     level = _level,
+                     user_id =_user_id
+                     WHERE id = _id;
+
+            End CASE ;
+            RETURN new_id;
+      END ;
+
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_administrators_get_by_id (_id bigint)
+RETURNS Table (id bigint,first_name text,last_name text, level int,user_id bigint)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM administrators WHERE id = _id;
+        end;
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_administrators_get_all (_name_table text)
+RETURNS int
+Language plpgsql AS
+  $$
+        BEGIN
+             SELECT * FROM _name_table;
+        end;
+  $$;
+
+---------------------------------------------------------------AIRLINE_COMPANIES------------------------------------------------------------------
+
+CREATE TABLE airline_companies
+  (
+      id serial unique ,
+      name text unique ,
+      country_id bigint,
+      user_id bigint unique ,
+      PRIMARY KEY (id),
+      FOREIGN KEY (country_id) REFERENCES countries (id),
+      FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+INSERT INTO airline_companies
+VALUES (1,'EVA Air',1,1),
+       (2,'Hainan Airlines',2,3),
+       (3,'Qantas Airways',6,6),
+       (4,'Lufthansa',5,4),
+       (5,'Thai Airways',4,2),
+       (6,'Qatar Airways',3,5);
+
+CREATE OR REPLACE FUNCTION sp_idu_airline_companies (_tasks text,_id bigint,_name text,_country_id bigint,_user_id bigint)
+RETURNS int
+Language plpgsql AS
+  $$
+      DECLARE
+            new_id int;
+      BEGIN
+            CASE
+                WHEN  _tasks = 'Insert'
+                THEN
+                     INSERT INTO airline_companies (name, country_id, user_id)
+                     VALUES (_name,_country_id,_user_id)
+                     RETURNING id INTO new_id;
+                WHEN  _tasks = 'Delete'
+                THEN
+                     DELETE FROM airline_companies WHERE id = _id;
+                WHEN  _tasks = 'Update'
+                THEN
+                     UPDATE airline_companies
+                     SET
+                     name = _name,
+                     country_id = _country_id,
+                     user_id =_user_id
+                     WHERE id = _id;
+
+            End CASE ;
+            RETURN new_id;
+      END ;
+
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_airline_companies_get_by_id (_id bigint)
+RETURNS Table (id bigint,name text,country_id text, user_id bigint)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM airline_companies WHERE id = _id;
+        end;
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_airline_companies_get_all ()
+RETURNS TABLE (id bigint,name text,country_id text, user_id bigint)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM airline_companies;
+        end;
+  $$;
+
+-------------------------------------------------------------------------- COUNTRIES ------------------------------------------------------------------------
+
+CREATE TABLE countries
+  (
+      id serial unique ,
+      name text unique ,
+      PRIMARY KEY (id)
+);
+insert into countries
+VALUES (1,'Taoyuan'),
+       (2,'China'),
+       (3,'Quatar'),
+       (4,'Thailand'),
+       (5,'Germany'),
+       (6,'Australia');
+
+
+CREATE OR REPLACE FUNCTION sp_idu_countries (_tasks text,_id bigint,_name text)
+RETURNS int
+Language plpgsql AS
+  $$
+      DECLARE
+            new_id int;
+      BEGIN
+            CASE
+                WHEN  _tasks = 'Insert'
+                THEN
+                     INSERT INTO countries (name)
+                     VALUES (_name)
+                     RETURNING id INTO new_id;
+                WHEN  _tasks = 'Delete'
+                THEN
+                     DELETE FROM countries WHERE id = _id;
+                WHEN  _tasks = 'Update'
+                THEN
+                     UPDATE countries
+                     SET
+                        name = _name
+                     WHERE id = _id;
+
+            End CASE ;
+            RETURN new_id;
+      END ;
+
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_countries_get_by_id (_id bigint)
+RETURNS Table (id bigint,name text)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM countries WHERE id = _id;
+        end;
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_countries_get_all ()
+RETURNS TABLE (id bigint,name text)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM countries;
+        end;
+  $$;
+
+-------------------------------------------------------------------------- CUSTOMERS ------------------------------------------------------------------------
+
+CREATE TABLE customers
+  (
+      id serial unique ,
+      first_name text,
+      last_name bigint,
+      address text,
+      phone_no text unique ,
+      credit_card_no text unique ,
+      user_id bigint unique ,
+      PRIMARY KEY (id),
+      FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+insert into customers
+VALUES (1,'Bob','Richi','Tel Aviv st.:Begin','048956481','4580125413674512',1),
+       (2,'Jhon','Bonjovi','Hadera st.:Hercel','048254879','45801254456985477854','2'),
+       (3,'Richard','Jackis','Kiryat Shmona st.:Hatanah','077954525','45801254532156945482',3),
+       (4,'Miki','Pushok','Tira st.:Zait','048569365','4580123654126985',4),
+       (5,'Menashe','Hofman','Afula st.:Shoham','077856958','3185485485691254',5),
+       (6,'Mark','Shagal','Nesher st.:Keren Ayasod','0543082154','3815452665987854',6);
+
+CREATE OR REPLACE FUNCTION sp_idu_customers (_tasks text,_id bigint,_first_name text,_last_name text,_address text,_phone_no text, _credit_card_no text,_user_id bigint)
+RETURNS int
+Language plpgsql AS
+  $$
+      DECLARE
+            new_id int;
+      BEGIN
+            CASE
+                WHEN  _tasks = 'Insert'
+                THEN
+                     INSERT INTO customers (first_name, last_name, address, phone_no,credit_card_no,user_id)
+                     VALUES (_first_name,_last_name,_address,_phone_no,_credit_card_no,_user_id)
+                     RETURNING id INTO new_id;
+                WHEN  _tasks = 'Delete'
+                THEN
+                     DELETE FROM customers WHERE id = _id;
+                WHEN  _tasks = 'Update'
+                THEN
+                     UPDATE customers
+                     SET
+                         first_name = _first_name,
+                         last_name = _last_name,
+                         address = _address,
+                         phone_no = _phone_no,
+                         credit_card_no = _credit_card_no,
+                         user_id =_user_id
+                     WHERE id = _id;
+
+            End CASE ;
+            RETURN new_id;
+      END ;
+
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_customers_get_by_id (_id bigint)
+RETURNS Table (id bigint,first_name text, last_name text, address text, phone_no text,credit_card_no text,user_id bigint)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM customers WHERE id = _id;
+        end;
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_customers_get_all ()
+RETURNS TABLE (id bigint,first_name text, last_name text, address text, phone_no text,credit_card_no text,user_id bigint)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM customers;
+        end;
+  $$;
+
+-------------------------------------------------------------------------- FLIGHTS ------------------------------------------------------------------------
+
 CREATE TABLE flights
   (
       id serial unique ,
@@ -13,23 +299,200 @@ CREATE TABLE flights
       FOREIGN KEY (destination_country_id) references countries (id)
 );
 
-CREATE TABLE countries
+insert into flights
+VALUES (1,2,6,1,'14:52','03:45'),
+       (2,5,2,3,'09:28','16:54'),
+       (3,6,1,6,'07:07','12:17'),
+       (4,4,5,4,'10:05','06:25'),
+       (5,3,4,2,'08:15','15:40'),
+       (6,1,3,5,'13:10','23:20');
+
+CREATE OR REPLACE FUNCTION sp_idu_flights (_tasks text,_id bigint,_airline_company_id bigint, _origin_country_id bigint, _destination_country_id bigint,
+                                            _departure_time date,_landing_time date,_remaining_tickets integer)
+RETURNS int
+Language plpgsql AS
+  $$
+      DECLARE
+            new_id int;
+      BEGIN
+            CASE
+                WHEN  _tasks = 'Insert'
+                THEN
+                     INSERT INTO flights (airline_company_id, origin_country_id, destination_country_id, departure_time,landing_time,remaining_tickets)
+                     VALUES (_airline_company_id, _origin_country_id, _destination_country_id, _departure_time,_landing_time,_remaining_tickets)
+                     RETURNING id INTO new_id;
+                WHEN  _tasks = 'Delete'
+                THEN
+                     DELETE FROM flights WHERE id = _id;
+                WHEN  _tasks = 'Update'
+                THEN
+                     UPDATE flights
+                     SET
+                         airline_company_id = _airline_company_id,
+                         origin_country_id = _origin_country_id,
+                         destination_country_id = _destination_country_id,
+                         departure_time =_departure_time,
+                         landing_time = _landing_time,
+                         remaining_tickets = _remaining_tickets
+                     WHERE id = _id;
+
+            End CASE ;
+            RETURN new_id;
+      END ;
+
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_flights_get_by_id (_id bigint)
+RETURNS Table (id bigint,airline_company_id bigint, origin_country_id bigint, destination_country_id bigint, departure_time date,landing_time date,remaining_tickets int)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM flights WHERE id = _id;
+        end;
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_flights_get_all ()
+RETURNS TABLE (id bigint,airline_company_id bigint, origin_country_id bigint, destination_country_id bigint, departure_time date,landing_time date,remaining_tickets int)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM flights;
+        end;
+  $$;
+
+-------------------------------------------------------------------------- TICKETS ------------------------------------------------------------------------
+CREATE TABLE tickets
   (
       id serial unique ,
-      name text unique ,
-      PRIMARY KEY (id)
+      flight_id bigint,
+      customer_id bigint,
+      UNIQUE (flight_id, customer_id),
+      PRIMARY KEY (id),
+      FOREIGN KEY (flight_id) REFERENCES flights (id),
+      FOREIGN KEY (customer_id) REFERENCES customers (id)
 );
 
-CREATE TABLE airline_companies
+INSERT INTO tickets
+VALUES (1,2,1),
+       (2,5,4),
+       (3,6,3),
+       (4,4,5),
+       (5,3,6),
+       (6,1,2);
+
+CREATE OR REPLACE FUNCTION sp_idu_tickets (_tasks text,_id bigint,_flight_id bigint, _customer_id bigint)
+RETURNS int
+Language plpgsql AS
+  $$
+      DECLARE
+            new_id int;
+      BEGIN
+            CASE
+                WHEN  _tasks = 'Insert'
+                THEN
+                     INSERT INTO tickets (flight_id, customer_id)
+                     VALUES (_flight_id,_customer_id)
+                     RETURNING id INTO new_id;
+                WHEN  _tasks = 'Delete'
+                THEN
+                     DELETE FROM tickets WHERE id = _id;
+                WHEN  _tasks = 'Update'
+                THEN
+                     UPDATE tickets
+                     SET
+                         flight_id = _flight_id,
+                         customer_id = _customer_id
+                     WHERE id = _id;
+
+            End CASE ;
+            RETURN new_id;
+      END ;
+
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_tickets_get_by_id (_id bigint)
+RETURNS Table (id bigint,flight_id bigint,customer_id bigint)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM tickets WHERE id = _id;
+        end;
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_tickets_get_all ()
+RETURNS TABLE (id bigint,flight_id bigint, customer_id bigint)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM tickets;
+        end;
+  $$;
+
+-------------------------------------------------------------------------- USER_ROLES ------------------------------------------------------------------------
+CREATE TABLE user_roles
   (
       id serial unique ,
-      name text unique ,
-      country_id bigint,
-      user_id bigint unique ,
-      PRIMARY KEY (id),
-      FOREIGN KEY (country_id) REFERENCES countries (id),
-      FOREIGN KEY (user_id) REFERENCES users (id)
+      role_mame text unique
 );
+
+INSERT INTO user_roles
+VALUES (1,'customer'),
+       (2,'airline company'),
+       (3,'admin');
+
+
+CREATE OR REPLACE FUNCTION sp_idu_user_roles (_tasks text,_id bigint,_role_name text)
+RETURNS int
+Language plpgsql AS
+  $$
+      DECLARE
+            new_id int;
+      BEGIN
+            CASE
+                WHEN  _tasks = 'Insert'
+                THEN
+                     INSERT INTO user_roles (role_mame)
+                     VALUES (_role_name)
+                     RETURNING id INTO new_id;
+                WHEN  _tasks = 'Delete'
+                THEN
+                     DELETE FROM user_roles WHERE id = _id;
+                WHEN  _tasks = 'Update'
+                THEN
+                     UPDATE user_roles
+                     SET
+                        role_mame = _role_name
+                     WHERE id = _id;
+            End CASE ;
+            RETURN new_id;
+      END ;
+
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_user_roles_get_by_id (_id bigint)
+RETURNS Table (id bigint,role_name text)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM user_roles WHERE id = _id;
+        end;
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_user_roles_get_all ()
+RETURNS TABLE (id bigint,role_name text)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM user_roles;
+        end;
+  $$;
+-------------------------------------------------------------------------- USERS ------------------------------------------------------------------------
 
 CREATE TABLE users
   (
@@ -42,44 +505,63 @@ CREATE TABLE users
       FOREIGN KEY (user_role) REFERENCES user_roles (id)
 );
 
-CREATE TABLE user_roles
-  (
-      id serial unique ,
-      role_mame text unique
-);
+insert into users
+VALUES (1,'Jocker',1,'Bob_048956481','Bob23@gmail.com'),
+       (2,'Freeman',2,'Jhon_048254879','Jhon36@gmail.com'),
+       (3,'Ñrazy',3,'Richard_077954525','Richard25@gmail.com'),
+       (4,'MikiMouse',4,'Miki_048569365','MikiMouse12@Hotmail.com'),
+       (5,'Tom&Jåry',5,'Tom343238_077856958','JeryJery@mail.ru'),
+       (6,'Shooter',6,'Mark_0543082154','Shooter555@gmail.com');
 
-CREATE TABLE administrators
-  (
-      id serial unique ,
-      first_name text,
-      last_name bigint,
-      level int ,
-      user_id bigint,
-      PRIMARY KEY (id),
-      FOREIGN KEY (user_id) REFERENCES users (id)
-);
 
-CREATE TABLE customers
-  (
-      id serial unique ,
-      first_name text,
-      last_name bigint,
-      address text,
-      phone_no text unique ,
-      credit_card_no text unique ,
-      user_id bigint unique ,
-      PRIMARY KEY (id),
-      FOREIGN KEY (user_id) REFERENCES users (id)
-);
+CREATE OR REPLACE FUNCTION sp_idu_users (_tasks text,_id bigint,_username text,_user_role_id bigint,_password text,_email text)
+RETURNS int
+Language plpgsql AS
+  $$
+      DECLARE
+            new_id int;
+      BEGIN
+            CASE
+                WHEN  _tasks = 'Insert'
+                THEN
+                     INSERT INTO users (username, user_role_id, password, email)
+                     VALUES (_username,_user_role_id,_password,_email)
+                     RETURNING id INTO new_id;
+                WHEN  _tasks = 'Delete'
+                THEN
+                     DELETE FROM users WHERE id = _id;
+                WHEN  _tasks = 'Update'
+                THEN
+                     UPDATE users
+                     SET
+                         username = _username,
+                         user_role = _user_role_id,
+                         password = _password,
+                         email =_email
+                     WHERE id = _id;
 
-CREATE TABLE tickets
-  (
-      id serial unique ,
-      flight_id bigint,
-      customer_id bigint,
-      UNIQUE (flight_id, customer_id),
-      PRIMARY KEY (id),
-      FOREIGN KEY (flight_id) REFERENCES flights (id),
-      FOREIGN KEY (customer_id) REFERENCES customers (id)
-);
+            End CASE ;
+            RETURN new_id;
+      END ;
 
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_users_get_by_id (_id bigint)
+RETURNS Table (id bigint,username text,user_role_id bigint,password text,email text)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM users WHERE id = _id;
+        end;
+  $$;
+
+CREATE OR REPLACE FUNCTION sp_users_get_all ()
+RETURNS TABLE (id bigint,username text,user_role_id bigint,password text,email text)
+Language plpgsql AS
+  $$
+        BEGIN
+             RETURN QUERY
+             SELECT * FROM users;
+        end;
+  $$;
