@@ -6,6 +6,8 @@ namespace Flight_Center
 {
     class Ticket : IPoco
     {
+        Flight flight;
+        Customer customer;
         public long Id { get; set; }
 
         public long Flight_Id { get; set; }
@@ -31,8 +33,8 @@ namespace Flight_Center
 
         public override bool Equals(object obj)
         {
-            Ticket test = obj as Ticket;
-            return this.Id.Equals(test.Id);
+            Ticket ticket = obj as Ticket;
+            return this.Id.Equals(ticket.Id);
         }
 
         public override int GetHashCode()
@@ -40,19 +42,21 @@ namespace Flight_Center
             return (int)this.Id;
         }
 
-        public static bool operator ==(Ticket c1, Ticket c2)
+        public static bool operator ==(Ticket t1, Ticket t2)
         {
 
-            if (c1 is null && c2 is null)
-                return true;
-            if (c1.Id == c2.Id)
-                return true;
-            return false;
+            if (t1 is null)
+            {
+                if (t2 is null)
+                    return true;
+                return false;
+            }
+            return t1.Equals(t2);
         }
 
-        public static bool operator !=(Ticket c1, Ticket c2)
+        public static bool operator !=(Ticket t1, Ticket t2)
         {
-            return !(c1 == c2);
+            return !(t1 == t2);
 
         }
     }

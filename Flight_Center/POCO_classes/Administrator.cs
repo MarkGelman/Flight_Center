@@ -6,6 +6,7 @@ namespace Flight_Center
 {
     class Administrator:IPoco,IUser
     {
+        User user;
         public int Id { get; set; }
         public string First_Name { get; set; }
         public string Last_Name { get; set; }
@@ -42,19 +43,28 @@ namespace Flight_Center
             return (int)this.Id;
         }
 
-        public static bool operator ==(Administrator c1, Administrator c2)
+        public static bool operator ==(Administrator admin1, Administrator admin2)
         {
 
-            if (c1 is null && c2 is null)
-                return true;
-            if (c1.Id == c2.Id)
-                return true;
-            return false;
+
+            if (admin1 is null)
+            {
+                if (admin2 is null)
+                {
+                    // null == null = true.
+                    return true;
+                }
+
+                // Only the left side is null.
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return admin1.Equals(admin2);
         }
 
-        public static bool operator !=(Administrator c1, Administrator c2)
+        public static bool operator !=(Administrator admin1, Administrator admin2)
         {
-            return !(c1 == c2);
+            return !(admin1 == admin2);
         }
     }
 }

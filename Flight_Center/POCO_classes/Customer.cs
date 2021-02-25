@@ -6,6 +6,7 @@ namespace Flight_Center
 {
     class Customer:IPoco,IUser
     {
+        Customer customer;
         public long Id { get; set; }
         public string First_Name { get; set; }
         public string Last_Name { get; set; }
@@ -49,11 +50,19 @@ namespace Flight_Center
         public static bool operator ==(Customer c1, Customer c2)
         {
 
-            if (c1 is null && c2 is null)
-                return true;
-            if (c1.Id == c2.Id)
-                return true;
-            return false;
+            if (c1 is null)
+            {
+                if (c2 is null)
+                {
+                    // null == null = true.
+                    return true;
+                }
+
+                // Only the left side is null.
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return c1.Equals(c2);
         }
 
         public static bool operator !=(Customer c1, Customer c2)

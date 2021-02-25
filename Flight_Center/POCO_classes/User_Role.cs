@@ -27,7 +27,7 @@ namespace Flight_Center
 
         public override bool Equals(object obj)
         {
-            User_Role test = obj as User_Role;
+            User_Role user_role = obj as User_Role;
             return this.Id.Equals(test.Id);
         }
 
@@ -36,19 +36,19 @@ namespace Flight_Center
             return (int)this.Id;
         }
 
-        public static bool operator ==(User_Role c1, User_Role c2)
+        public static bool operator ==(User_Role u_r1, User_Role u_r2)
         {
 
-            if (c1 is null && c2 is null)
+            if (u_r1 is null && u_r2 is null)
                 return true;
-            if (c1.Id == c2.Id)
+            if (u_r1.Id == u_r2.Id)
                 return true;
             return false;
         }
 
-        public static bool operator !=(User_Role c1, User_Role c2)
+        public static bool operator !=(User_Role u_r1, User_Role u_r2)
         {
-            return !(c1 == c2);
+            return !(u_r1 == u_r2);
         }
     }
 }

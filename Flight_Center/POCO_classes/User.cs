@@ -34,8 +34,8 @@ namespace Flight_Center
 
         public override bool Equals(object obj)
         {
-            User test = obj as User;
-            return this.Id.Equals(test.Id);
+            User user = obj as User;
+            return this.Id.Equals(user.Id);
         }
 
         public override int GetHashCode()
@@ -43,19 +43,21 @@ namespace Flight_Center
             return (int)this.Id;
         }
 
-        public static bool operator ==(User c1, User c2)
+        public static bool operator ==(User u1, User u2)
         {
 
-            if (c1 is null && c2 is null)
-                return true;
-            if (c1.Id == c2.Id)
-                return true;
-            return false;
+            if (u1 is null)
+            {
+                if (u2 is null)
+                    return true;
+                return false;
+            }
+            return u1.Equals(u2);
         }
 
-        public static bool operator !=(User c1, User c2)
+        public static bool operator !=(User u1, User u2)
         {
-            return !(c1 == c2);
+            return !(u1 == u2);
         }
     }
 }

@@ -7,54 +7,8 @@ namespace Flight_Center.Interfaces.DAO
 {
     class AirlineDAOPGSQL : IAirlineDAO
     {
-        string _query = "";
-        public void Add(Airline_Company t)
-        {
-            _query = $"INSERT INTO tests VALUES ({t.Id},{t.Name})";
-
-            int row = NonReader(_query, "Add Airline_Company");
-        }
-
-        public IList<Airline_Company> GelAll()
-        {
-            _query = $"SELECT * FROM tests";
-
-            return Reader(_query, "Get All Airline_Company");
-        }
-
-        public List<Airline_Company> GetAirlineByUsername(string name)
-        {
-            _query = $"SELECT * FROM tests WHERE name = '{name}'";
-
-            return Reader(_query, $"Get airline company by {name}");
-        }
-
-        public IList<Airline_Company> Get(int id)
-        {
-            _query = $"SELECT * FROM tests WHERE id = {id}";
-
-            return Reader(_query, $"Get airline company by {id}");
-        }
-
-        public List<Airline_Company> GetAllAirlineByCountry(string country)
-        {
-            _query = $"SELECT * FROM tests WHERE name = '{country}'";
-
-            return Reader(_query, $"Get all airline company by {country}");
-        }
-
-        public void Remove(Airline_Company t)
-        {
-            _query = $"DELETE FROM tests WHERE id ={t.Id}";
-            int row = NonReader(_query, $"Delete airline company by {t.Name}");
-        }
-
-        public void Update(Airline_Company t)
-        {
-            _query = $"UPDATE tests SET id = {t.Id},name = {t.Name} ";
-            int row = NonReader(_query, $"Update airline company {t.Name}");
-        }
-
+        string _sp_name = "";
+        
         public List<Airline_Company> Reader(string query, string function)
         {
             List<Airline_Company> allAirlineCompanies = new List<Airline_Company>();
@@ -63,8 +17,9 @@ namespace Flight_Center.Interfaces.DAO
                 using (NpgsqlConnection connection = new NpgsqlConnection(Fligth_CenterAppConfig.ConnectionString))
                 {
                     connection.Open();
-                    using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+                    using (NpgsqlCommand command = new NpgsqlCommand(_sp_name, connection))
                     {
+                        command.CommandText = 
                         using (NpgsqlDataReader reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -119,6 +74,52 @@ namespace Flight_Center.Interfaces.DAO
             return 0;
         }
 
-        
+        public Airline_Company GetAirlineByUsername(string name)
+        {
+            _sp_name = "sp_get_company_by_username";
+            return Extraction(_sp_name, name);
+        }
+
+        public IList<Airline_Company> GetAllAirlineByCountry(string country)
+        {
+            _sp_name = "sp_get_all_company";
+            return Reader(_sp_name, country);
+        }
+
+        public void Add(Airline_Company t)
+        {
+            _sp_name = "sp_insert_company";
+            NonReader(_sp_name);
+        }
+
+        public void Remove(Airline_Company t)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update(Airline_Company t)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Airline_Company Get(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<Airline_Company> GelAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        private Airline_Company Extraction (string sp_name,string parameter)
+        {
+            IList<Airline_Company> amara = Reader(sp_name, parameter);
+            return new Airline_Company
+            {
+                Id = amara[0].Id,
+                Name = amara[0].Name
+            };
+        }
     }
 }

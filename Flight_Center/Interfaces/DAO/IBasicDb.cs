@@ -9,7 +9,9 @@ namespace Flight_Center
        void Add(T t);
         void Remove(T t);
         void Update(T t);
-        IList<T> Get(int id);
+        T Get(int id);
         IList<T> GelAll();
+        
+
     }
 }

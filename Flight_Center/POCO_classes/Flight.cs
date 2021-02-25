@@ -6,6 +6,7 @@ namespace Flight_Center
 {
     class Flight:IPoco
     {
+        Airline_Company company;
         public long Id { get; set; }
         public long Airline_Company_Id { get; set; }
         public long Origin_Country_Id { get; set; }
@@ -37,8 +38,8 @@ namespace Flight_Center
 
         public override bool Equals(object obj)
         {
-            Flight test = obj as Flight;
-            return this.Id.Equals(test.Id);
+            Flight flight = obj as Flight;
+            return this.Id.Equals(flight.Id);
         }
 
         public override int GetHashCode()
@@ -46,19 +47,21 @@ namespace Flight_Center
             return (int)this.Id;
         }
 
-        public static bool operator ==(Flight c1, Flight c2)
+        public static bool operator ==(Flight f1, Flight f2)
         {
 
-            if (c1 is null && c2 is null)
-                return true;
-            if (c1.Id == c2.Id)
-                return true;
-            return false;
+            if (f1 is null)
+            {
+                if (f2 is null)
+                    return true;
+                return false;
+            }
+            return f1.Equals(f2);
         }
 
-        public static bool operator !=(Flight c1, Flight c2)
+        public static bool operator !=(Flight f1, Flight f2)
         {
-            return !(c1 == c2);
+            return !(f1 == f2);
         }
 
     }
